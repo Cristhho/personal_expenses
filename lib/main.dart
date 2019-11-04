@@ -75,6 +75,36 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  List<Widget> _buildLandscapeContent(MediaQueryData mediaQuery, AppBar appBar, Widget listWidget) {
+    return [Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text('Show Chart', style: Theme.of(context).textTheme.title,),
+        Switch.adaptive(activeColor: Theme.of(context).accentColor,
+            value: _showChart, onChanged: (value) {
+              setState(() {
+                _showChart = value;
+              });
+            })
+      ],
+    ), _showChart ? Container(
+        height: (mediaQuery.size.height
+            - appBar.preferredSize.height
+            - mediaQuery.padding.top) * 0.6,
+        child: Chart(_recentTransactions)
+    ) :
+    listWidget];
+  }
+
+  List<Widget> _buildPortraitContent(MediaQueryData mediaQuery, AppBar appBar, Widget listWidget) {
+    return [Container(
+        height: (mediaQuery.size.height
+            - appBar.preferredSize.height
+            - mediaQuery.padding.top) * 0.3,
+        child: Chart(_recentTransactions)
+    ), listWidget];
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
@@ -113,37 +143,10 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Column(
 //          mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          if(isLandscape) Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text('Show Chart', style: Theme.of(context).textTheme.title,),
-              Switch.adaptive(activeColor: Theme.of(context).accentColor,
-                  value: _showChart, onChanged: (value) {
-                    setState(() {
-                      _showChart = value;
-                    });
-                  })
-            ],
-          ),
-          if(!isLandscape)
-            Container(
-                height: (mediaQuery.size.height
-                    - appBar.preferredSize.height
-                    - mediaQuery.padding.top) * 0.3,
-                child: Chart(_recentTransactions)
-            ),
-          if(!isLandscape)
-            listWidget,
-          if(isLandscape)
-            _showChart ? Container(
-                height: (mediaQuery.size.height
-                    - appBar.preferredSize.height
-                    - mediaQuery.padding.top) * 0.6,
-                child: Chart(_recentTransactions)
-            ) :
-            listWidget
-        ],
+        children: isLandscape ?
+            _buildLandscapeContent(mediaQuery, appBar, listWidget)
+          :
+            _buildPortraitContent(mediaQuery, appBar, listWidget)
       ),
     ));
     return Platform.isIOS ?
