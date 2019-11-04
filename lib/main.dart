@@ -105,11 +105,12 @@ class _MyHomePageState extends State<MyHomePage> {
     ), listWidget];
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final isLandscape = mediaQuery.orientation == Orientation.landscape;
-    final PreferredSizeWidget appBar = Platform.isIOS ? CupertinoNavigationBar(
+  Widget _buildAppBar() {
+    return Platform.isIOS ? _iosNavigation() : _androidNavigation() ;
+  }
+
+  Widget _iosNavigation() {
+    return CupertinoNavigationBar(
       middle: Text(
           'Personal Expenses'
       ),
@@ -122,7 +123,11 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
       ),
-    ) : AppBar(
+    );
+  }
+
+  Widget _androidNavigation() {
+    return AppBar(
       title: Text(
           'Personal Expenses'
       ),
@@ -133,6 +138,13 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ],
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+    final PreferredSizeWidget appBar = _buildAppBar();
     final listWidget = Container(
       height: (mediaQuery.size.height
           - appBar.preferredSize.height
